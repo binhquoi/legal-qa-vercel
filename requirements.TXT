@@ -1,12 +1,9 @@
-
-# File requirements.txt đúng cho Vercel
+# đã sửa lỗi
 streamlit
 langchain
-langchain-community
+langchain-google-genai
 langchain-astradb
 pypdf
 python-docx
 openpyxl
-# Hoặc langchain-google-genai hoặc langchain-huggingface
-langchain-huggingface 
-sentence-transformers
+protobuf

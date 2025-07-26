@@ -1,5 +1,4 @@
 streamlit
-langchain-core
-langchain-google-genai
-langchain-astradb
-protobuf
+google-generativeai
+astrapy
+numpy

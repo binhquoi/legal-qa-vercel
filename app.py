@@ -1,5 +1,6 @@
 # app.py - Mã nguồn cho ứng dụng web (Phiên bản ổn định hơn)
 import os
+import sys
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_astradb import AstraDBVectorStore
@@ -12,7 +13,7 @@ ASTRA_DB_API_ENDPOINT = os.getenv("ASTRA_DB_API_ENDPOINT")
 ASTRA_DB_APPLICATION_TOKEN = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
 
 # --- Hàm khởi tạo và kiểm tra ---
-@st.cache_resource
+# LOẠI BỎ @st.cache_resource để tăng tính ổn định trên môi trường serverless
 def get_vector_store():
     """Kết nối và lấy vector store từ Astra DB một cách an toàn."""
     if not all([GOOGLE_API_KEY, ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN]):
@@ -28,10 +29,12 @@ def get_vector_store():
         )
         return vector_store
     except Exception as e:
-        st.error(f"Lỗi khi kết nối tới cơ sở dữ liệu vector: {e}")
+        # Ghi lỗi ra log của Vercel để dễ dàng gỡ lỗi
+        print(f"ERROR_CONNECT_DB: {e}", file=sys.stderr)
+        st.error(f"Lỗi khi kết nối tới cơ sở dữ liệu vector. Vui lòng kiểm tra lại API keys và cấu hình AstraDB.")
         return None
 
-@st.cache_resource
+# LOẠI BỎ @st.cache_resource
 def get_conversational_chain():
     """Tạo chuỗi xử lý câu hỏi."""
     prompt_template = """
@@ -48,7 +51,8 @@ def get_conversational_chain():
         chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
         return chain
     except Exception as e:
-        st.error(f"Lỗi khi khởi tạo mô hình AI: {e}")
+        print(f"ERROR_INIT_AI: {e}", file=sys.stderr)
+        st.error(f"Lỗi khi khởi tạo mô hình AI. Vui lòng kiểm tra lại Google API Key.")
         return None
 
 # --- Logic chính ---
@@ -71,7 +75,8 @@ def user_input(user_question):
         
         st.write("### Câu trả lời:", response["output_text"])
     except Exception as e:
-        st.error(f"Đã xảy ra lỗi trong quá trình xử lý câu hỏi: {e}")
+        print(f"ERROR_PROCESS_QUERY: {e}", file=sys.stderr)
+        st.error(f"Đã xảy ra lỗi trong quá trình xử lý câu hỏi. Vui lòng thử lại.")
 
 # --- Giao diện Streamlit ---
 st.set_page_config(page_title="Hỏi Đáp Pháp Luật", page_icon="⚖️")

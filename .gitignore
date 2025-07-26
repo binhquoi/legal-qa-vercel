@@ -1,0 +1,10 @@
+# Bỏ qua môi trường ảo
+venv/
+.venv/
+
+# Bỏ qua các tệp cache của Python
+__pycache__/
+*.pyc
+
+# Bỏ qua tệp biến môi trường
+.env

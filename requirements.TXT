@@ -1,0 +1,9 @@
+streamlit
+langchain
+langchain-google-genai
+langchain-community
+langchain-astradb
+pypdf
+python-docx
+openpyxl
+beautifulsoup4

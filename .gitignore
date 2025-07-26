@@ -1,10 +1,16 @@
-# Bỏ qua môi trường ảo
-venv/
-.venv/
-
-# Bỏ qua các tệp cache của Python
-__pycache__/
-*.pyc
-
-# Bỏ qua tệp biến môi trường
 .env
+#Bỏ qua thư mục chứa dữ liệu gốc, không cần thiết cho ứng dụng online
+data/
+
+#Bỏ qua các thư mục cache và môi trường ảo của Python
+.venv/
+pycache/
+*.pyc
+*.pyo
+
+#Bỏ qua các file và thư mục của Git
+.git/
+.gitignore
+
+#Bỏ qua các file cấu hình của trình soạn thảo code (ví dụ: VS Code)
+.vscode/

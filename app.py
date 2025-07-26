@@ -1,12 +1,14 @@
-# app.py - Mã nguồn cho ứng dụng web
+# app.py - Mã nguồn cho ứng dụng web (Đã sửa lỗi)
 import os
 import streamlit as st
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_astradb import AstraDBVectorStore
-from langchain.chains.Youtubeing import load_qa_chain
+# SỬA LỖI: Tên module đúng là "question_answering"
+from langchain.chains.question_answering import load_qa_chain
 from langchain.prompts import PromptTemplate
 
 # Lấy các biến môi trường đã thiết lập trên Vercel
+# Đảm bảo các biến này đã được thiết lập trong phần Settings > Environment Variables trên Vercel
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 ASTRA_DB_API_ENDPOINT = os.getenv("ASTRA_DB_API_ENDPOINT")
 ASTRA_DB_APPLICATION_TOKEN = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
@@ -14,6 +16,11 @@ ASTRA_DB_APPLICATION_TOKEN = os.getenv("ASTRA_DB_APPLICATION_TOKEN")
 @st.cache_resource
 def get_vector_store():
     """Kết nối và lấy vector store từ Astra DB."""
+    # Kiểm tra xem các biến môi trường có tồn tại không
+    if not all([GOOGLE_API_KEY, ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN]):
+        st.error("Lỗi: Vui lòng thiết lập đầy đủ các biến môi trường (API keys) trên Vercel.")
+        return None
+        
     embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=GOOGLE_API_KEY)
     vector_store = AstraDBVectorStore(
         embedding=embeddings,
@@ -41,6 +48,11 @@ def get_conversational_chain():
 def user_input(user_question):
     """Xử lý câu hỏi của người dùng và trả về câu trả lời."""
     vector_store = get_vector_store()
+    
+    # Nếu vector_store không được khởi tạo thành công thì dừng lại
+    if vector_store is None:
+        return
+
     docs = vector_store.similarity_search(user_question, k=5) # Tìm 5 kết quả liên quan nhất
     
     chain = get_conversational_chain()
@@ -48,7 +60,7 @@ def user_input(user_question):
     
     st.write("### Câu trả lời:", response["output_text"])
 
-# Giao diện Streamlit
+# --- Giao diện Streamlit ---
 st.set_page_config(page_title="Hỏi Đáp Pháp Luật", page_icon="⚖️")
 st.header("⚖️ Trợ lý Hỏi Đáp Pháp Luật AI")
 

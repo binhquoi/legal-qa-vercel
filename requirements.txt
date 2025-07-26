@@ -1,0 +1,8 @@
+streamlit
+langchain
+langchain-google-genai
+langchain-astradb
+pypdf
+python-docx
+openpyxl
+protobuf
